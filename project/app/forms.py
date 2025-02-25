@@ -52,3 +52,21 @@ class AdminRegistrationForm(forms.ModelForm):
 class LoginForm(forms.Form):
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput())
+
+
+
+
+
+    # forms.py
+from django import forms
+from .models import Booking
+
+class BookingForm(forms.ModelForm):
+    class Meta:
+        model = Booking
+        fields = ['appointment_date', 'appointment_time']
+        widgets = {
+            'appointment_date': forms.DateInput(attrs={'type': 'date'}),
+            'appointment_time': forms.TimeInput(attrs={'type': 'time'}),
+        }
+

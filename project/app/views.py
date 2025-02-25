@@ -119,3 +119,42 @@ def stafhome(request):
 
 def customerhome(request):
     return render(request,'customer/customerhome.html')
+
+
+
+# views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Department, Doctor, Booking
+from .forms import BookingForm
+
+def department_list(request):
+    """List all available departments."""
+    departments = Department.objects.all()
+    return render(request, 'department_list.html', {'departments': departments})
+
+def doctor_list(request, department_id):
+    """List all available doctors in a given department."""
+    department = get_object_or_404(Department, id=department_id)
+    doctors = department.doctors.filter(available=True)
+    return render(request, 'doctor_list.html', {'department': department, 'doctors': doctors})
+
+@login_required
+def book_doctor(request, doctor_id):
+    """Allow a logged in customer to book an appointment with a doctor."""
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    if request.method == 'POST':
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.doctor = doctor
+            booking.customer = request.user
+            booking.save()
+            return redirect('booking_success')
+    else:
+        form = BookingForm()
+    return render(request, 'book_doctor.html', {'doctor': doctor, 'form': form})
+
+def booking_success(request):
+    """Simple success page after booking."""
+    return render(request, 'booking_success.html')

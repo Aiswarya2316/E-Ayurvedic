@@ -65,3 +65,34 @@ class Treatment(models.Model):
 
     def __str__(self):
         return f"Treatment for {self.customer.name} by {self.staff.name} - {self.status}"
+    
+
+# models.py
+from django.db import models
+from django.contrib.auth.models import User  # Using Django's built-in User model
+
+class Department(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    
+    def __str__(self):
+        return self.name
+
+class Doctor(models.Model):
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='doctors')
+    name = models.CharField(max_length=100)
+    bio = models.TextField(blank=True, null=True)
+    available = models.BooleanField(default=True)  # Mark if doctor is available for booking
+
+    def __str__(self):
+        return self.name
+
+class Booking(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='bookings')
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
+    appointment_date = models.DateField()
+    appointment_time = models.TimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.customer.username} - {self.doctor.name} on {self.appointment_date}"

@@ -10,4 +10,10 @@ urlpatterns = [
     path("registeradmin/", views.admin_register, name="admin_register"),
     path("login/", views.user_login, name="login"),
     path("logout/", views.user_logout, name="logout"),
+    path('departments/', views.department_list, name='department_list'),
+    path('departments/<int:department_id>/doctors/', views.doctor_list, name='doctor_list'),
+    path('doctors/<int:doctor_id>/book/', views.book_doctor, name='book_doctor'),
+    path('booking/success/', views.booking_success, name='booking_success'),
+
+
 ]
