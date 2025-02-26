@@ -57,6 +57,21 @@ class LoginForm(forms.Form):
 
 
 
+from django import forms
+from .models import Department, Doctor
+
+class DepartmentForm(forms.ModelForm):
+    class Meta:
+        model = Department
+        fields = ['name', 'description']
+
+class DoctorForm(forms.ModelForm):
+    class Meta:
+        model = Doctor
+        fields = ['department', 'name', 'bio', 'available','consultation_fee']
+
+
+
     # forms.py
 from django import forms
 from .models import Booking

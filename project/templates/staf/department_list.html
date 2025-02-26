@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departments | E-Ayurveda</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        /* Full-Width Navigation Bar */
+        .navbar {
+            background-color: #343a40;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar ul li {
+            display: inline;
+        }
+
+        .navbar ul li a {
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+            padding: 10px 15px;
+            transition: 0.3s;
+            border-radius: 5px;
+        }
+
+        .navbar ul li a:hover {
+            background-color: #1abc9c;
+        }
+
+        /* Logout Button */
+        .logout-btn {
+            background: #e74c3c;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Main Content */
+        .container {
+            margin: 120px auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-size: 28px;
+        }
+
+        /* Department List */
+        .department-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .department-list li {
+            background: #ecf0f1;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .department-list li:hover {
+            transform: translateY(-3px);
+        }
+
+        .department-list li a {
+            text-decoration: none;
+            font-size: 18px;
+            color: #2c3e50;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+        }
+
+        .department-list li a i {
+            color: #16a085;
+        }
+
+        /* Add Button */
+        .add-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 16px;
+            background: #16a085;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background: #1abc9c;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .container {
+                width: 80%;
+            }
+
+            .navbar {
+                padding: 15px 30px;
+            }
+
+            .navbar ul {
+                gap: 10px;
+            }
+
+            .navbar ul li a {
+                padding: 8px 12px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .navbar ul {
+                flex-direction: column;
+                margin-top: 10px;
+            }
+
+            .navbar ul li {
+                margin: 5px 0;
+            }
+
+            .container {
+                width: 90%;
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">E-Ayurveda</div>
+        <ul>
+            <li><a href="../stafhome">Dashboard</a></li>
+            <li><a href="../add-department">Add Department</a></li>
+            <li><a href="../add-doctor">Add Doctors</a></li>
+            <li><a href="../departments">Departments</a></li>
+            <li><a href="../doctors">Doctors</a></li>
+            <li><a href="../stafbookings">Bookings</a></li>
+            <li><a href="../logout" class="logout-btn">Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <h2><i class="fas fa-hospital"></i> Departments</h2>
+        <ul class="department-list">
+            {% for department in departments %}
+                <li>
+                    <a href="{% url 'doctor_list' %}">
+                        <span>{{ department.name }}</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'add_department' %}" class="add-btn">
+            <i class="fas fa-plus"></i> Add New Department
+        </a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookings - E-Ayurveda</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: #343a40;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+        }
+
+        .navbar .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+        }
+
+        .navbar ul li {
+            display: inline;
+        }
+
+        .navbar ul li a {
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+            padding: 8px 12px;
+            transition: 0.3s;
+        }
+
+        .navbar ul li a:hover {
+            background-color: #28a745;
+            border-radius: 5px;
+        }
+
+        /* Table Styling */
+        .table th {
+            text-align: center;
+            background-color: #212529;
+            color: white;
+        }
+
+        .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        /* Responsive Table */
+        .table-responsive {
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Logout Button */
+        .logout-btn {
+            background-color: red;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">E-Ayurveda</div>
+        <ul>
+            <li><a href="../stafhome">Dashboard</a></li>
+            <li><a href="../add-department">Add Department</a></li>
+            <li><a href="../add-doctor">Add Doctors</a></li>
+            <li><a href="../departments">Departments</a></li>
+            <li><a href="../doctors">Doctors</a></li>
+            <li><a href="../stafbookings">Bookings</a></li>
+            <li><a href="../logout" class="logout-btn">Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">All Bookings</h2>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th>Customer Name</th>
+                        <th>Doctor</th>
+                        <th>Appointment Date</th>
+                        <th>Appointment Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>{{ booking.customer_name }}</td>
+                        <td>{{ booking.doctor.name }}</td>
+                        <td>{{ booking.appointment_date }}</td>
+                        <td>{{ booking.appointment_time }}</td>
+                        <td>
+                            {% if booking.status == "Pending" %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                            {% elif booking.status == "Paid" %}
+                            <span class="badge bg-success">Paid</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Unknown</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">No bookings available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (Optional for interactive features like dropdowns) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

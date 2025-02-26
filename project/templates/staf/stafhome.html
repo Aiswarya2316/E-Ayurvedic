@@ -19,27 +19,23 @@
 
         /* Navigation Bar */
         .navbar {
-            background: #2c3e50;
-            color: white;
+            background-color: #343a40;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 40px;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
+            padding: 15px 30px;
         }
 
         .navbar .logo {
-            font-size: 22px;
+            color: white;
+            font-size: 24px;
             font-weight: bold;
         }
 
         .navbar ul {
             list-style: none;
             display: flex;
-            gap: 20px;
+            gap: 15px;
         }
 
         .navbar ul li {
@@ -50,13 +46,14 @@
             text-decoration: none;
             color: white;
             font-size: 16px;
+            padding: 8px 12px;
             transition: 0.3s;
         }
 
         .navbar ul li a:hover {
-            text-decoration: underline;
+            background-color: #28a745;
+            border-radius: 5px;
         }
-
         /* Hero Section */
         .hero {
             background: url('static/download.jpg') no-repeat center center/cover;
@@ -167,10 +164,12 @@
     <nav class="navbar">
         <div class="logo">E-Ayurveda</div>
         <ul>
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Tasks</a></li>
-            <li><a href="#">Reports</a></li>
+            <li><a href="../">Dashboard</a></li>
+            <li><a href="../add-department">Add Department </a></li>
+            <li><a href="../add-doctor">Add Doctors</a></li>
+            <li><a href="../departments">Departments</a></li>
+            <li><a href="../doctors">Doctors</a></li>
+            <li><a href="../stafbookings">Bookings</a></li>
             <li><a href="../logout">Logout</a></li>
         </ul>
     </nav>

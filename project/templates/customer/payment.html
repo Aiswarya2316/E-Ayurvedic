@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Payment</title>
+        <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+    </head>
+    
+<body>
+    <h2>Payment for {{ booking.doctor.name }}</h2>
+    <p>Customer Name: {{ booking.customer_name }}</p>
+    <p>Amount: ₹{{ booking.doctor.consultation_fee }}</p>
+
+    <button id="rzp-button">Pay Now</button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const paymentButton = document.getElementById("rzp-button");
+        
+            paymentButton.addEventListener("click", function () {
+                fetch(`/payment/{{ booking.id }}/`, {
+                    method: "POST",
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" }, // Fix CSRF issue
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.order_id && data.key) {
+                        var options = {
+                            "key": data.key,
+                            "amount": data.amount,
+                            "currency": "INR",
+                            "name": "E-Ayurveda",
+                            "description": "Doctor Consultation Fee",
+                            "order_id": data.order_id,
+                            "handler": function (response) {
+                                fetch("/razorpay-callback/", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                                    body: new URLSearchParams({
+                                        "razorpay_order_id": response.razorpay_order_id,
+                                        "razorpay_payment_id": response.razorpay_payment_id,
+                                        "razorpay_signature": response.razorpay_signature
+                                    })
+                                }).then(response => response.json())
+                                  .then(data => {
+                                      if (data.status === "success") {
+                                          alert("Payment Successful!");
+                                          window.location.href = data.redirect_url; // Redirect to booking history
+                                      } else {
+                                          alert("Payment Failed!");
+                                      }
+                                  });
+                            },
+                            "theme": { "color": "#3399cc" }
+                        };
+        
+                        var rzp1 = new Razorpay(options);
+                        rzp1.open();
+                    } else {
+                        alert("Failed to fetch payment details!");
+                    }
+                })
+                .catch(error => console.error("Error fetching payment details:", error));
+            });
+        });
+        
+    </script>
+    
+</body>
+</html>

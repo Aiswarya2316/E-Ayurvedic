@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctors - E-Ayurveda</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #2C3E50;
+            padding: 15px 20px;
+        }
+
+        .logo {
+            color: #ECF0F1;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+        }
+
+        .navbar ul li {
+            margin: 0 15px;
+        }
+
+        .navbar ul li a {
+            color: #ECF0F1;
+            text-decoration: none;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .navbar ul li a:hover {
+            color: #1ABC9C;
+        }
+
+        /* Page Container */
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #2C3E50;
+            margin-bottom: 20px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #2C3E50;
+            border-radius: 5px;
+            width: 250px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        select:hover {
+            border-color: #1ABC9C;
+        }
+
+        /* Doctor List */
+        .doctor-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .doctor-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+            text-align: center;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .doctor-info {
+            font-size: 16px;
+            color: #2C3E50;
+            margin-bottom: 10px;
+        }
+
+        .book-now {
+            background: #1ABC9C;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .book-now:hover {
+            background: #16A085;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .navbar ul {
+                flex-direction: column;
+                margin-top: 10px;
+            }
+
+            .navbar ul li {
+                margin: 10px 0;
+            }
+
+            .doctor-list {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .doctor-card {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">E-Ayurveda</div>
+        <ul>
+            <li><a href="../customerhome"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="../about"><i class="fas fa-info-circle"></i> About</a></li>
+            <li><a href="../doctorss"><i class="fas fa-user-md"></i> Doctors</a></li>
+            <li><a href="../booking-history"><i class="fas fa-calendar-check"></i> Bookings</a></li>
+            <li><a href="../logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+        <h2>Available Doctors</h2>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <form method="get">
+                <label>Filter by Department:</label>
+                <select name="department_id" onchange="this.form.submit()">
+                    <option value="">All Departments</option>
+                    {% for department in departments %}
+                        <option value="{{ department.id }}">{{ department.name }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <!-- Doctor List -->
+        <div class="doctor-list">
+            {% for doctor in doctors %}
+                <div class="doctor-card">
+                    <div class="doctor-info">
+                        <strong>{{ doctor.name }}</strong><br>
+                        <span>({{ doctor.department.name }})</span><br>
+                        <span>Fee: ₹{{ doctor.consultation_fee }}</span>
+                    </div>
+                    <form action="{% url 'book_doctor' doctor.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="book-now">Book Now</button>
+                    </form>
+                </div>
+            {% empty %}
+                <p style="text-align: center; color: #2C3E50;">No doctors available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>

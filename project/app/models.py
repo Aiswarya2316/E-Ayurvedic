@@ -82,17 +82,45 @@ class Doctor(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='doctors')
     name = models.CharField(max_length=100)
     bio = models.TextField(blank=True, null=True)
-    available = models.BooleanField(default=True)  # Mark if doctor is available for booking
+    available = models.BooleanField(default=True)
+    consultation_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # Add this field
 
     def __str__(self):
         return self.name
-
+    
 class Booking(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='bookings')
-    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
+    customer_contact = models.CharField(max_length=15, null=True, blank=True)
+    customer_name = models.CharField(max_length=100, null=True, blank=True)
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
     created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20, 
+        choices=[('Pending', 'Pending'), ('Paid', 'Paid')],
+        default='Pending'
+    )
 
     def __str__(self):
-        return f"{self.customer.username} - {self.doctor.name} on {self.appointment_date}"
+        return f"{self.customer_name} - {self.doctor.name} on {self.appointment_date}"
+
+
+
+from django.db import models
+
+class Payment(models.Model):
+    booking = models.ForeignKey('Booking', on_delete=models.CASCADE, related_name='payments')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    razorpay_order_id = models.CharField(max_length=255, blank=True, null=True)
+    razorpay_payment_id = models.CharField(max_length=255, blank=True, null=True)
+    transaction_id = models.CharField(max_length=255, unique=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[('Pending', 'Pending'), ('Completed', 'Completed'), ('Failed', 'Failed')],
+        default='Pending'
+    )
+
+    def __str__(self):
+        return f"Payment for {self.booking} - {self.status}"
+
+
