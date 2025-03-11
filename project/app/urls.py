@@ -21,6 +21,6 @@ urlpatterns = [
     path("booking-history/", views.booking_history, name="booking_history"),
     path("about/", views.about, name="about"),
     path('stafbookings/', views.staff_view_bookings, name='staff-bookings'),
-
+    path('chat-review/', views.review_code_chat, name='chat_review'),
 
 ]

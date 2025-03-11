@@ -1,6 +1,7 @@
 from django.db import models
 
 class Customer(models.Model):
+
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     phone = models.PositiveBigIntegerField()
@@ -124,3 +125,13 @@ class Payment(models.Model):
         return f"Payment for {self.booking} - {self.status}"
 
 
+class PlagarismChat(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)  # Tie the chat to a customer
+    code = models.TextField()
+    review = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    model_used = models.CharField(max_length=20)
+    review_type = models.CharField(max_length=20)  # 'live', 'chat', or 'file'
+    
+    def __str__(self):
+        return f"Plagiarism Chat by {self.customer.name} on {self.created_at}"

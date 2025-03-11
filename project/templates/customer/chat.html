@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mx-auto h-screen flex flex-col ">
+    <!-- Chat Container -->
+    <div class="flex-1 flex flex-col max-w-xl mx-auto w-full bg-white shadow-lg" style="max-height: 45rem;
+    margin-top: 2rem; max-width: 58rem;">
+        <!-- Chat Header -->
+        <div class="bg-blue-200 text-white px-4 py-3 flex items-center">
+            <h2 class="text-xl font-semibold"> Ayurveda AI Chat </h2>
+        </div>
+
+       <!-- Chat Messages Area -->
+<div class="flex-1 overflow-y-auto p-4 space-y-4" id="chatMessages" style="max-height: 35rem;  overflow-y: auto;">
+    {% if chat_history %}
+    {% for chat in chat_history %}
+        <!-- Code Message -->
+        <div class="flex justify-end">
+            <div class="bg-blue-100 rounded-lg px-4 py-2 max-w-[80%]">
+                <pre class="text-gray-800 whitespace-pre-wrap text-sm font-mono">{{ chat.code }}</pre>
+                <p class="text-xs text-gray-500 mt-1">
+                    {{ chat.created_at|date:"g:i A" }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Review Message -->
+        <div class="flex justify-start">
+            <div class="bg-white border rounded-lg px-4 py-2 max-w-[80%] shadow">
+                <div id="review-{{ chat.id }}" class="review-points"></div>  <!-- Placeholder for review points -->
+                <p class="text-xs text-gray-500 mt-1">
+                    {{ chat.created_at|date:"g:i A" }}
+                </p>
+            </div>
+        </div>
+
+        <script>
+            // Split the review into points on the frontend using JavaScript
+            document.addEventListener("DOMContentLoaded", function() {
+                var reviewText = "{{ chat.review|escapejs }}";  // Get the review text and escape any special characters
+
+                // Split review by '*' and remove empty points
+                var points = reviewText.split('*').map(function(point) {
+                    return point.trim();  // Trim each point to remove excess spaces
+                }).filter(function(point) {
+                    return point !== "";  // Filter out empty points
+                });
+
+                // Render each point in the 'review-points' div
+                var reviewContainer = document.getElementById("review-{{ chat.id }}");
+                points.forEach(function(point) {
+                    var p = document.createElement("p");
+                    p.classList.add("text-gray-800");
+                    p.textContent = point;
+                    reviewContainer.appendChild(p);
+                });
+            });
+        </script>
+    {% endfor %}
+{% else %}
+        <!-- Welcome Message -->
+        <div class="flex justify-center">
+            <div class="bg-gray-200 rounded-lg px-4 py-2 max-w-[80%]">
+                <p>Welcome! provide Info for Ayurveda help.</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+
+        <!-- Input Area -->
+        <div class="border-t p-4 bg-white">
+            <form id="codeForm" class="flex items-center space-x-2">
+                {% csrf_token %}
+                <textarea 
+                    name="code_content"
+                    id="codeInput"
+                    class="flex-1 border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
+                    placeholder="provide Info for Ayurveda help"
+                    rows="3"
+                ></textarea>
+                <button 
+                    type="submit"
+                    class="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    id="submitButton"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatMessages = document.getElementById('chatMessages');
+    const codeForm = document.getElementById('codeForm');
+    const codeInput = document.getElementById('codeInput');
+    const submitButton = document.getElementById('submitButton');
+
+    // Scroll to bottom on page load
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    codeForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const code = codeInput.value.trim();
+        if (!code) return;
+
+        // Disable submit button and input while processing
+        submitButton.disabled = true;
+        codeInput.disabled = true;
+
+        // Add loading state
+        submitButton.classList.add('opacity-50');
+
+        // Add user message immediately
+        const timestamp = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        const userMessage = `
+            <div class="flex justify-end">
+                <div class="bg-green-100 rounded-lg px-4 py-2 max-w-[80%]">
+                    <pre class="text-gray-800 whitespace-pre-wrap text-sm font-mono">${escapeHtml(code)}</pre>
+                    <p class="text-xs text-gray-500 mt-1">${timestamp}</p>
+                </div>
+            </div>
+        `;
+        appendMessage(userMessage);
+
+        try {
+            const response = await fetch('{% url "chat_review" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ code_content: code })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Add AI response
+                const aiMessage = `
+                <div class="flex justify-start">
+                    <div class="bg-white border rounded-lg px-4 py-2 max-w-[80%] shadow">
+                        ${data.career_suggestion.map((point) => `
+                            <p class="text-gray-800">${point}</p>
+                        `).join('')}
+                        <p class="text-xs text-gray-500 mt-1">${timestamp}</p>
+                    </div>
+                </div>
+            `;
+            
+            
+                appendMessage(aiMessage);
+            } else {
+                throw new Error(data.error || 'An error occurred');
+            }
+        } catch (error) {
+            // Add error message
+            const errorMessage = `
+                <div class="flex justify-center">
+                    <div class="bg-red-100 text-red-600 rounded-lg px-4 py-2 max-w-[80%]">
+                        ${error.message}
+                    </div>
+                </div>
+            `;
+            appendMessage(errorMessage);
+        } finally {
+            // Re-enable submit button and input
+            submitButton.disabled = false;
+            codeInput.disabled = false;
+            submitButton.classList.remove('opacity-50');
+            codeInput.value = '';
+        }
+    });
+
+    function appendMessage(messageHTML) {
+        const div = document.createElement('div');
+        div.innerHTML = messageHTML;
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,384 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Expense Tracker - Add Expense</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <title>{% block title %}Plagiarism checker{% endblock %}</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+    {% load static %}
+
+    <!-- Favicon -->
+    <link href="{% static 'img/favicon.ico' %}" rel="icon">
+    
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500&family=Jost:wght@500;600;700&display=swap" rel="stylesheet"> 
+    
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Libraries Stylesheet -->
+    <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    
+    <!-- Template Stylesheet -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+        <!-- Tailwind CSS -->
+        {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
+    
+        <!-- Alpine.js for interactivity -->
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+      <style>
+            [x-cloak] { display: none !important; }
+        </style> 
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom Styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            background-color: #212529 !important;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 22px;
+        }
+
+        .navbar-nav .nav-link {
+            font-size: 16px;
+            font-weight: 500;
+            padding: 10px 15px;
+            transition: 0.3s ease-in-out;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        }
+{% comment %} 
+        .container {
+            max-width: 600px;
+            margin-top: 40px;
+            padding: 20px;
+        } {% endcomment %}
+
+        .card {
+            border-radius: 12px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        .btn-submit {
+            background-color: #007bff;
+            color: white;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            transition: 0.3s ease-in-out;
+        }
+
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+            
+        {% comment %} body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        } {% endcomment %}
+
+        #code_input {
+            font-family: 'Monaco', 'Consolas', monospace;
+            background-color: #1f2937;
+            color: #e5e7eb;
+            border-radius: 0.5rem;
+            border: 1px solid #374151;
+            transition: all 0.2s ease-in-out;
+            line-height: 1.6;
+        }
+
+        #code_input:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+        }
+
+        #code_input::placeholder {
+            color: #9ca3af;
+        }
+
+        {% comment %} .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        } {% endcomment %}
+
+        .title-emoji {
+            display: inline-block;
+            transform: scale(1.2);
+            margin: 0 0.5rem;
+        }
+        .chathistory{
+            overflow-y: auto;
+            max-height: 300px;
+        }
+        /* Ensuring all images are the same size */
+.card-img-top {
+width: 100%;
+height: 150px; /* Fixed height for images */
+object-fit: none; /* Ensures the image covers the area without distorting */
+}
+
+/* Ensuring all cards have the same height */
+.card {
+display: flex;
+flex-direction: column;
+height: 100%;
+}
+
+/* Ensuring the content of the card takes up remaining space */
+.card-body {
+flex-grow: 1;
+}
+
+iframe{
+    min-height:30rem;
+}
+.tradingview-widget-copyright{
+    display:none;
+}
+
+/* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #2c3e50;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ecf0f1;
+        }
+
+        .navbar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+
+        .navbar ul li {
+            margin-left: 20px;
+        }
+
+        .navbar ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .navbar ul li a:hover {
+            color: #1abc9c;
+        }
+
+        /* Table Styles */
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        p{
+            text-align:left;
+        }
+        th {
+            background-color: #1abc9c;
+            color: white;
+            font-size: 18px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e8f6f3;
+        }
+
+        .status-pending {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        
+        .status-completed {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        .status-cancelled {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .navbar ul {
+                flex-direction: column;
+                margin-top: 10px;
+            }
+
+            .navbar ul li {
+                margin: 10px 0;
+            }
+
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            table, th, td {
+                font-size: 14px;
+            }
+        }
+
+    </style>
+    {% block extra_css %}{% endblock %}
+
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+<!-- Navigation Bar -->
+<nav class="navbar">
+    <div class="logo">E-Ayurveda</div>
+    <ul>
+        <li><a href="../customerhome"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="../about"><i class="fas fa-info-circle"></i> About</a></li>
+        <li><a href="../doctorss"><i class="fas fa-user-md"></i> Doctors</a></li>
+        <li><a href="../booking-history"><i class="fas fa-calendar-check"></i> Bookings</a></li>
+        <li><a href="../logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+</nav>
+
+    <!-- Expense Form Section -->
+    <div class="container" style="margin-bottom:3rem;" >
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="container mt-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Main Content -->
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+        <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+        <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+        <script src="{% static 'lib/counterup/counterup.min.js' %}"></script>
+        <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+        
+        <!-- Template Javascript -->
+        <script src="{% static 'js/main.js' %}"></script>
+        
+        {% block extra_js %}{% endblock %}
+</body>
+
+</html>

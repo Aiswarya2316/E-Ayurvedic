@@ -330,3 +330,181 @@ def about (request):
 def staff_view_bookings(request):
     bookings = Booking.objects.all()  # Get all bookings
     return render(request, 'staf/staf_bookings.html', {'bookings': bookings})
+
+
+
+
+# views.py
+from datetime import timedelta
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from functools import wraps
+import json
+import time
+
+
+
+import google.generativeai as genai
+from groq import Groq
+
+# Configuration
+GEMINI_API_KEY = 'AIzaSyCFsU7s437e1uNS-YjNhkSdiOBsOTgNIv0'
+GROQ_API_KEY = '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'
+
+# Configure APIs
+genai.configure(api_key=GEMINI_API_KEY)
+groq_client = Groq(api_key=GROQ_API_KEY)
+
+# class ModelManager:
+#     def __init__(self):
+#         # Set Groq as the default model
+#         self.current_model = "groq"  # Default model set to Groq
+#         self.last_error_time = 0
+#         self.error_cooldown = 300  # 5 minutes cooldown before retrying failed model
+
+#     def switch_model(self):
+#         if self.current_model == "groq":
+#             self.current_model = "gemini"
+#         else:
+#             self.current_model = "groq"
+#         self.last_error_time = time.time()
+
+class ModelManager:
+    def __init__(self):
+        self.current_model = "gemini"
+        self.last_error_time = 0
+        self.error_cooldown = 500  # 5 minutes cooldown before retrying failed model
+
+    def switch_model(self):
+        if self.current_model == "gemini":
+            self.current_model = "groq"
+        else:
+            self.current_model = "gemini"
+        self.last_error_time = time.time()
+
+model_manager = ModelManager()
+
+def handle_rate_limits(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            # If enough time has passed since last error, try switching back to primary model
+            if time.time() - model_manager.last_error_time > model_manager.error_cooldown:
+                model_manager.current_model = "gemini"
+            
+            # Switch model and retry
+            model_manager.switch_model()
+            return func(*args, **kwargs)
+    return wrapper
+
+def review_with_gemini(code):
+    model = genai.GenerativeModel(
+        # model_name='models/gemini-1.5-pro-latest',
+        model_name='models/gemini-1.5-flash',
+
+        system_instruction = """
+        You are an Ayurveda assistant that helps users improve their health and well-being through personalized Ayurvedic advice. Based on the user's inputs about their lifestyle, diet, physical condition, and wellness goals, your task is to provide tailored Ayurvedic suggestions. This includes recommending dietary changes, lifestyle adjustments, herbal remedies, daily routines, and self-care practices. Your responses should be grounded in Ayurvedic principles and provide actionable steps that are practical, safe, and aligned with the user's unique constitution (dosha). Always ensure the advice is personalized, holistic, and easy to integrate into the user's daily life.
+        """
+
+
+    )
+
+
+    
+    try:
+        response = model.generate_content(code)
+        print(f"Gemini response: {response.text}")  # Log the response text for debugging
+        return response.text.strip()
+    except Exception as e:
+        print(f"Error with Gemini API: {str(e)}")  # Log the error from Gemini API
+        raise  # Re-raise the exception after logging it
+
+def review_with_groq(code):
+    system_prompt = """        You are an Ayurveda assistant that helps users improve their health and well-being through personalized Ayurvedic advice. Based on the user's inputs about their lifestyle, diet, physical condition, and wellness goals, your task is to provide tailored Ayurvedic suggestions. This includes recommending dietary changes, lifestyle adjustments, herbal remedies, daily routines, and self-care practices. Your responses should be grounded in Ayurvedic principles and provide actionable steps that are practical, safe, and aligned with the user's unique constitution (dosha). Always ensure the advice is personalized, holistic, and easy to integrate into the user's daily life.."""
+    
+    chat_completion = groq_client.chat.completions.create(
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": code}
+        ],
+        model="llama3-70b-8192",
+        temperature=0.7,
+        max_tokens=1000
+    )
+    return chat_completion.choices[0].message.content.strip()
+
+
+
+
+
+
+
+from django.utils import timezone
+
+
+
+from django.contrib.auth.decorators import login_required
+
+def review_code_chat(request):
+    # if not check_query_limit(request.user):
+    #     return JsonResponse({"error": "Monthly query limit reached"}, status=403)
+
+    if request.method == 'GET':
+        # Get the current time and subtract 12 hours
+        twelve_hours_ago = timezone.now() - timedelta(hours=12)
+        
+        # Filter PlagiarismChat for the current logged-in customer (request.user is assumed to be a Customer instance)
+        chat_history = PlagarismChat.objects.filter(
+            customer__id=request.session["user_id"],  # Use session user_id directly
+            created_at__gte=twelve_hours_ago
+        )
+        
+        # Render the chat history to the template
+        return render(request, 'customer/chat.html', {
+            'chat_history': chat_history
+        })
+
+    elif request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            code_content = data.get('code_content')
+            
+            if not code_content:
+                return JsonResponse({"error": "Please provide some code"}, status=400)
+
+            # Review the code using the appropriate model
+            if model_manager.current_model == "gemini":
+                review = review_with_gemini(code_content)
+            else:
+                review = review_with_groq(code_content)
+
+            # Create a chat record
+            chat = PlagarismChat.objects.create(
+                customer_id=request.session["user_id"],  # ✅ Correct way
+                code=code_content,
+                review=review,
+                model_used=model_manager.current_model,
+                review_type='chat'
+            )
+
+            suggestion_points = [point.strip() for point in review.split('*') if point]
+
+            # UserQueryCount.increment_query(request.user, 'chat')
+            print(suggestion_points)
+            return JsonResponse({
+                "career_suggestion": suggestion_points
+            })
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+
+
+from django.shortcuts import render
+
+def chart(request):
+    return render(request, 'chart.html')
