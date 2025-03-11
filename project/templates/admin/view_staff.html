@@ -57,6 +57,12 @@
             background: #34344a;
         }
 
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            width: 100%;
+        }
+
         .main-content {
             margin-left: 250px;
             padding: 20px;
@@ -74,42 +80,37 @@
             align-items: center;
         }
 
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+        .content {
             margin-top: 20px;
-        }
-
-        .card {
             background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .card i {
-            font-size: 30px;
-            margin-bottom: 10px;
-            color: #6200ea;
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
         }
 
-        .card h4 {
-            margin: 10px 0;
-            font-size: 18px;
+        table th {
+            background: #6200ea;
+            color: white;
         }
 
-        .card p {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
+        table tr:hover {
+            background: #f1f1f1;
         }
 
         @media (max-width: 768px) {
@@ -132,45 +133,41 @@
     <div class="sidebar">
         <h2>E-Ayurvedic</h2>
         <ul>
-            <li><a href="{% url 'view_users' %}" style="color: white; text-decoration: none;"><i class="fas fa-users"></i> <span>Users</span></a></li>
-            <li><a href="{% url 'view_staff' %}" style="color: white; text-decoration: none;"><i class="fas fa-user-tie"></i> <span>Staff</span></a></li>
-            <li><a href="{% url 'view_doctor' %}" style="color: white; text-decoration: none;"><i class="fas fa-user-md"></i> <span>Doctors</span></a></li>
-            <li><a href="{% url 'view_bookings' %}" style="color: white; text-decoration: none;"><i class="fas fa-calendar-check"></i> <span>Bookings</span></a></li>
-            <li><a href="../logout" style="color: white; text-decoration: none;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+            <li><a href="{% url 'view_users' %}"><i class="fas fa-users"></i> <span>Users</span></a></li>
+            <li><a href="{% url 'view_staff' %}"><i class="fas fa-user-tie"></i> <span>Staff</span></a></li>
+            <li><a href="{% url 'view_doctors' %}"><i class="fas fa-user-md"></i> <span>Doctors</span></a></li>
+            <li><a href="{% url 'view_bookings' %}"><i class="fas fa-calendar-check"></i> <span>Bookings</span></a></li>
+            <li><a href="../logout"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
         </ul>
-        
     </div>
 
     <div class="main-content">
         <div class="header">
-           <h2> <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></h2>
+           <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
             <div class="user-info">
                 <span>Welcome, Admin</span>
             </div>
         </div>
 
-        <div class="cards">
-            <div class="card">
-                <i class="fas fa-users"></i>
-                <h4>Total Users</h4>
-                <p>{{ total_users }}</p>
-            </div>
-            <div class="card">
-                <i class="fas fa-user-tie"></i>
-                <h4>Total Staff</h4>
-                <p>{{ total_staff }}</p>
-            </div>
-            <div class="card">
-                <i class="fas fa-user-md"></i>
-                <h4>Total Doctors</h4>
-                <p>{{ total_doctors }}</p>
-            </div>
-            <div class="card">
-                <i class="fas fa-calendar-check"></i>
-                <h4>Total Bookings</h4>
-                <p>{{ total_bookings }}</p>
-            </div>
-        </div>        
+        <div class="content">
+            {% block content %}
+            <h2>All Staffs</h2>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+                {% for staf in staff %}
+                <tr>
+                    <td>{{ staf.id }}</td>
+                    <td>{{ staf.name }}</td>
+                    <td>{{ staf.email }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% endblock %}
+        </div>
     </div>
 </body>
 </html>

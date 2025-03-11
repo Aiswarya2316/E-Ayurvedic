@@ -22,5 +22,9 @@ urlpatterns = [
     path("about/", views.about, name="about"),
     path('stafbookings/', views.staff_view_bookings, name='staff-bookings'),
     path('chat-review/', views.review_code_chat, name='chat_review'),
+    path('users/', views.view_users, name='view_users'),
+    path('staff/', views.view_staff, name='view_staff'),
+    path('doctor/', views.view_doctors, name='view_doctors'),
+    path('bookings/', views.view_bookings, name='view_bookings'),
 
 ]

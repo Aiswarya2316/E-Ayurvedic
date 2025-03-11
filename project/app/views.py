@@ -106,9 +106,20 @@ def user_logout(request):
 
 
 
-
 def adminhome(request):
-    return render(request,'admin/adminhome.html')
+    total_users = Customer.objects.count()
+    total_stafs = Staf.objects.count()
+    total_doctors = Doctor.objects.count()
+    total_bookings = Booking.objects.count()  # Fix: Count bookings instead of summing an unknown field
+
+    context = {
+        'total_users': total_users,
+        'total_stafs': total_stafs,
+        'total_doctors': total_doctors,
+        'total_bookings': total_bookings
+    }
+    return render(request, 'admin/adminhome.html', context)
+
 
 
 
@@ -508,3 +519,24 @@ from django.shortcuts import render
 
 def chart(request):
     return render(request, 'chart.html')
+
+
+
+from django.shortcuts import render
+from .models import Customer, Staf, Doctor, Booking
+
+def view_users(request):
+    users = Customer.objects.all()
+    return render(request, 'admin/view_users.html', {'users': users})
+
+def view_staff(request):
+    staff = Staf.objects.all()
+    return render(request, 'admin/view_staff.html', {'staff': staff})
+
+def view_doctors(request):
+    doctors = Doctor.objects.all()
+    return render(request, 'admin/view_doctors.html', {'doctors': doctors})
+
+def view_bookings(request):
+    bookings = Booking.objects.all()
+    return render(request, 'admin/view_bookings.html', {'bookings': bookings})
