@@ -92,7 +92,7 @@ class Doctor(models.Model):
 class Booking(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='bookings')
     customer_contact = models.CharField(max_length=15, null=True, blank=True)
-    customer_name = models.CharField(max_length=100, null=True, blank=True)
+    customer_name = models.CharField(max_length=100)
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
     created_at = models.DateTimeField(auto_now_add=True)

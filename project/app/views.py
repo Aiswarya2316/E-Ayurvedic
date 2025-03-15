@@ -207,6 +207,9 @@ def doctors_by_department(request):
 
     return render(request, 'customer/doctors_list.html', {'departments': departments, 'doctors': doctors})
 
+from datetime import date
+from django.shortcuts import get_object_or_404, redirect
+from .models import Doctor, Booking
 
 def book_doctor(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
@@ -214,22 +217,17 @@ def book_doctor(request, doctor_id):
     if request.method == "POST":
         customer_name = request.POST.get('customer_name')
         customer_contact = request.POST.get('customer_contact')
-        appointment_date = request.POST.get('appointment_date', '2025-01-01')  # Default date
-        appointment_time = request.POST.get('appointment_time')
+        appointment_time = request.POST.get('appointment_time', '09:00')  # Default time if missing
 
-        if not appointment_time:
-            appointment_time = '09:00'  # Default time if missing
+        appointment_date = date.today()  # Set the booking date to today
 
         print(f"Received Data - Name: {customer_name}, Contact: {customer_contact}, Date: {appointment_date}, Time: {appointment_time}")
-
-        if not appointment_date:
-            return redirect('doctors_by_department')  # Handle missing date properly
 
         booking = Booking.objects.create(
             doctor=doctor,
             customer_name=customer_name,
             customer_contact=customer_contact,
-            appointment_date=appointment_date,
+            appointment_date=appointment_date,  # Today's date
             appointment_time=appointment_time,
             status='Pending'
         )
@@ -237,7 +235,6 @@ def book_doctor(request, doctor_id):
         return redirect('payment', booking_id=booking.id)
 
     return redirect('doctors_by_department')
-
 
 import uuid  # Fix: Import uuid
 import razorpay
