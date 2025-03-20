@@ -91,8 +91,7 @@ class Doctor(models.Model):
     
 class Booking(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='bookings')
-    customer_contact = models.CharField(max_length=15, null=True, blank=True)
-    customer_name = models.CharField(max_length=100)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='bookings')  # ForeignKey to Customer
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -103,8 +102,7 @@ class Booking(models.Model):
     )
 
     def __str__(self):
-        return f"{self.customer_name} - {self.doctor.name} on {self.appointment_date}"
-
+        return f"{self.customer.name} - {self.doctor.name} on {self.appointment_date}"
 
 
 from django.db import models

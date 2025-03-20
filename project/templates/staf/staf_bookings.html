@@ -122,7 +122,7 @@
                 <tbody>
                     {% for booking in bookings %}
                     <tr>
-                        <td>{{ booking.customer_name }}</td>
+                        <td>{{ booking.customer.name }}</td>
                         <td>{{ booking.doctor.name }}</td>
                         <td>{{ booking.appointment_date }}</td>
                         <td>{{ booking.appointment_time }}</td>

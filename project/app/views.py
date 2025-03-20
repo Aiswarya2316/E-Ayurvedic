@@ -215,19 +215,18 @@ def book_doctor(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
 
     if request.method == "POST":
-        customer_name = request.POST.get('customer_name')
-        customer_contact = request.POST.get('customer_contact')
-        appointment_time = request.POST.get('appointment_time', '09:00')  # Default time if missing
+        customer_id = request.POST.get('customer_id')  # Assuming customer ID is sent from frontend
+        customer = get_object_or_404(Customer, id=customer_id)  # Get customer instance
 
+        appointment_time = request.POST.get('appointment_time', '09:00')  # Default time if missing
         appointment_date = date.today()  # Set the booking date to today
 
-        print(f"Received Data - Name: {customer_name}, Contact: {customer_contact}, Date: {appointment_date}, Time: {appointment_time}")
+        print(f"Received Data - Customer: {customer.name}, Date: {appointment_date}, Time: {appointment_time}")
 
         booking = Booking.objects.create(
             doctor=doctor,
-            customer_name=customer_name,
-            customer_contact=customer_contact,
-            appointment_date=appointment_date,  # Today's date
+            customer=customer,  # Store customer object instead of name & contact
+            appointment_date=appointment_date,
             appointment_time=appointment_time,
             status='Pending'
         )
@@ -235,6 +234,7 @@ def book_doctor(request, doctor_id):
         return redirect('payment', booking_id=booking.id)
 
     return redirect('doctors_by_department')
+
 
 import uuid  # Fix: Import uuid
 import razorpay
@@ -336,8 +336,9 @@ def about (request):
 
 
 def staff_view_bookings(request):
-    bookings = Booking.objects.all()  # Get all bookings
+    bookings = Booking.objects.select_related('customer', 'doctor').all()  # Optimized query to include customer details
     return render(request, 'staf/staf_bookings.html', {'bookings': bookings})
+
 
 
 
