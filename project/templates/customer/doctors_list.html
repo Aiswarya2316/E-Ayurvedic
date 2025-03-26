@@ -195,14 +195,17 @@
             {% for doctor in doctors %}
                 <div class="doctor-card">
                     <div class="doctor-info">
-                        <strong>{{ doctor.name }}</strong><br>
-                        <span>({{ doctor.department.name }})</span><br>
+                        <strong>Doctor:{{ doctor.name }}</strong><br>
+                        <strong>Location:{{ doctor.location }}</strong><br>
+                        <span>Deparment:({{ doctor.department.name }})</span><br>
                         <span>Fee: ₹{{ doctor.consultation_fee }}</span>
                     </div>
                     <form action="{% url 'book_doctor' doctor.id %}" method="post">
                         {% csrf_token %}
+                        <input type="hidden" name="customer_id" value="{{ request.session.user_id }}">
                         <button type="submit" class="book-now">Book Now</button>
                     </form>
+                    
                 </div>
             {% empty %}
                 <p style="text-align: center; color: #2C3E50;">No doctors available.</p>

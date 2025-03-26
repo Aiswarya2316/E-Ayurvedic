@@ -159,6 +159,7 @@
     <table>
         <tr>
             <th>Doctor</th>
+            <th>Location</th>
             <th>Date</th>
             <th>Time</th>
             <th>Status</th>
@@ -166,6 +167,7 @@
         {% for booking in bookings %}
         <tr>
             <td>{{ booking.doctor.name }}</td>
+            <td>{{ booking.doctor.location }}</td>
             <td>{{ booking.appointment_date }}</td>
             <td>{{ booking.appointment_time }}</td>
             <td class="status-{{ booking.status|lower }}">{{ booking.status }}</td>

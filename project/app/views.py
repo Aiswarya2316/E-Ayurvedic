@@ -76,7 +76,9 @@ def user_login(request):
             if Customer.objects.filter(email=email, password=password).exists():
                 user = Customer.objects.get(email=email)
                 request.session["user_type"] = "Customer"
+                request.session["user_id"] = user.id  # Ensure user_id is stored
                 redirect_url = "customerhome"
+
             elif Staf.objects.filter(email=email, password=password).exists():
                 user = Staf.objects.get(email=email)
                 request.session["user_type"] = "Staf"
@@ -211,21 +213,40 @@ from datetime import date
 from django.shortcuts import get_object_or_404, redirect
 from .models import Doctor, Booking
 
+from django.shortcuts import get_object_or_404, redirect
+from datetime import date, datetime
+from django.http import JsonResponse
+from app.models import Doctor, Customer, Booking  # Ensure you import your models
+
+from django.shortcuts import get_object_or_404, redirect
+from datetime import date, datetime
+from django.http import JsonResponse
+from app.models import Doctor, Customer, Booking  # Ensure you import your models
+
 def book_doctor(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
 
     if request.method == "POST":
-        customer_id = request.POST.get('customer_id')  # Assuming customer ID is sent from frontend
-        customer = get_object_or_404(Customer, id=customer_id)  # Get customer instance
-
-        appointment_time = request.POST.get('appointment_time', '09:00')  # Default time if missing
-        appointment_date = date.today()  # Set the booking date to today
+        print("POST Data:", request.POST)  # Debugging: Check received data
+        
+        customer_id = request.POST.get('customer_id')  # Get customer ID from POST request
+        
+        if not customer_id:
+            return JsonResponse({"error": "Customer ID is missing", "received_data": request.POST.dict()}, status=400)
+        
+        try:
+            customer = Customer.objects.get(id=customer_id)  # Get customer instance
+        except Customer.DoesNotExist:
+            return JsonResponse({"error": "No Customer matches the given query"}, status=404)
+        
+        appointment_time = datetime.now().strftime("%H:%M")  # Current time in HH:MM format
+        appointment_date = date.today()  # Set appointment date to today
 
         print(f"Received Data - Customer: {customer.name}, Date: {appointment_date}, Time: {appointment_time}")
 
         booking = Booking.objects.create(
             doctor=doctor,
-            customer=customer,  # Store customer object instead of name & contact
+            customer=customer,  # Store customer object
             appointment_date=appointment_date,
             appointment_time=appointment_time,
             status='Pending'

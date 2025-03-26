@@ -84,10 +84,12 @@ class Doctor(models.Model):
     name = models.CharField(max_length=100)
     bio = models.TextField(blank=True, null=True)
     available = models.BooleanField(default=True)
-    consultation_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # Add this field
+    consultation_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    location = models.CharField(max_length=255, blank=True, null=True)  # New field for location
 
     def __str__(self):
         return self.name
+
     
 class Booking(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='bookings')

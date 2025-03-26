@@ -68,7 +68,7 @@ class DepartmentForm(forms.ModelForm):
 class DoctorForm(forms.ModelForm):
     class Meta:
         model = Doctor
-        fields = ['department', 'name', 'bio', 'available','consultation_fee']
+        fields = ['department', 'name', 'bio', 'available','consultation_fee', 'location']
 
 
 
