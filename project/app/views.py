@@ -162,6 +162,28 @@ def add_doctor(request):
 
 
 
+def edit_doctor(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    if request.method == "POST":
+        form = DoctorForm(request.POST, instance=doctor)
+        if form.is_valid():
+            form.save()
+            return redirect('doctor_list')
+    else:
+        form = DoctorForm(instance=doctor)
+    return render(request, 'staf/edit_doctor.html', {'form': form})
+
+
+
+
+
+def delete_doctor(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    if request.method == "POST":
+        doctor.delete()
+        return redirect('doctor_list')
+    return render(request, 'staf/delete_doctor.html', {'doctor': doctor})
+
 
 
 
