@@ -209,6 +209,12 @@
                 <li>
                     <a href="{% url 'doctor_list' %}">
                         <span>{{ department.name }}</span>
+                        <form action="{% url 'delete_department' department.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="background:#e74c3c; color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
                         <i class="fas fa-arrow-right"></i>
                     </a>
                 </li>

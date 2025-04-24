@@ -581,3 +581,15 @@ def view_doctors(request):
 def view_bookings(request):
     bookings = Booking.objects.all()
     return render(request, 'admin/view_bookings.html', {'bookings': bookings})
+
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Department
+from django.contrib import messages
+
+def delete_department(request, department_id):
+    department = get_object_or_404(Department, id=department_id)
+    if request.method == 'POST':
+        department.delete()
+        messages.success(request, "Department deleted successfully.")
+    return redirect('department_list')  # this should match your url name for the department listing
+
